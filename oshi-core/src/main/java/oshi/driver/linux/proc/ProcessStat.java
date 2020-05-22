@@ -392,4 +392,19 @@ public final class ProcessStat {
         File[] pids = procdir.listFiles(f -> DIGITS.matcher(f.getName()).matches());
         return pids != null ? pids : new File[0];
     }
+    
+    /**
+    * Gets the page size of shared memory in {@code /proc/[pid]/statm} to convert to bytes. 
+    * @param pid
+    *           The process ID for which to fetch stats
+    *@return page size in bytes of shared memory
+    */
+    public static long getShMemPages(int pid) {
+        String statm = FileUtil.getStringFromFile(String.format("/proc/%d/statm", pid));
+        String[] split = ParseUtil.whitespaces.split(statm);
+        if (split.length > 2) {
+            return ParseUtil.parseLongOrDefault(split[2], 0L);
+        }
+        return 0L;
+    }
 }
